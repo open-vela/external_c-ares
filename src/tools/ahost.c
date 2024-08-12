@@ -108,21 +108,21 @@ int         main(int argc, char **argv)
         options.ndomains++;
         options.domains = (char **)realloc(
           options.domains, (size_t)options.ndomains * sizeof(char *));
-        options.domains[options.ndomains - 1] = strdup(state.optarg);
+        options.domains[options.ndomains - 1] = strdup(state.arg);
         break;
       case 't':
-        if (!strcasecmp(state.optarg, "a")) {
+        if (!strcasecmp(state.arg, "a")) {
           addr_family = AF_INET;
-        } else if (!strcasecmp(state.optarg, "aaaa")) {
+        } else if (!strcasecmp(state.arg, "aaaa")) {
           addr_family = AF_INET6;
-        } else if (!strcasecmp(state.optarg, "u")) {
+        } else if (!strcasecmp(state.arg, "u")) {
           addr_family = AF_UNSPEC;
         } else {
           usage();
         }
         break;
       case 's':
-        if (state.optarg == NULL) {
+        if (state.arg == NULL) {
           fprintf(stderr, "%s", "missing servers");
           usage();
           break;
@@ -130,7 +130,7 @@ int         main(int argc, char **argv)
         if (servers) {
           free(servers);
         }
-        servers = strdup(state.optarg);
+        servers = strdup(state.arg);
         break;
       case 'h':
       case '?':
@@ -142,8 +142,8 @@ int         main(int argc, char **argv)
     }
   }
 
-  argc -= state.optind;
-  argv += state.optind;
+  argc -= state.ind;
+  argv += state.ind;
   if (argc < 1) {
     usage();
   }

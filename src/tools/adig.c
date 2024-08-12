@@ -158,7 +158,7 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
   int                 c;
 
   ares_getopt_init(&state, argc, argv);
-  state.opterr = 0;
+  state.err = 0;
 
   while ((c = ares_getopt(&state, "dh?f:s:c:t:T:U:")) != -1) {
     int f;
@@ -175,10 +175,10 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
         return ARES_TRUE;
 
       case 'f':
-        f = lookup_flag(configflags, nconfigflags, state.optarg);
+        f = lookup_flag(configflags, nconfigflags, state.arg);
         if (f == 0) {
           snprintf(config->error, sizeof(config->error), "flag %s unknown",
-                   state.optarg);
+                   state.arg);
         }
 
         config->options.flags |= f;
@@ -186,7 +186,7 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
         break;
 
       case 's':
-        if (state.optarg == NULL) {
+        if (state.arg == NULL) {
           snprintf(config->error, sizeof(config->error), "%s",
                    "missing servers");
           return ARES_FALSE;
@@ -194,21 +194,21 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
         if (config->servers) {
           free(config->servers);
         }
-        config->servers = strdup(state.optarg);
+        config->servers = strdup(state.arg);
         break;
 
       case 'c':
-        if (!ares_dns_class_fromstr(&config->qclass, state.optarg)) {
+        if (!ares_dns_class_fromstr(&config->qclass, state.arg)) {
           snprintf(config->error, sizeof(config->error),
-                   "unrecognized class %s", state.optarg);
+                   "unrecognized class %s", state.arg);
           return ARES_FALSE;
         }
         break;
 
       case 't':
-        if (!ares_dns_rec_type_fromstr(&config->qtype, state.optarg)) {
+        if (!ares_dns_rec_type_fromstr(&config->qtype, state.arg)) {
           snprintf(config->error, sizeof(config->error), "unrecognized type %s",
-                   state.optarg);
+                   state.arg);
           return ARES_FALSE;
         }
         break;
@@ -216,7 +216,7 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
       case 'T':
         {
           /* Set the TCP port number. */
-          long port = strtol(state.optarg, NULL, 0);
+          long port = strtol(state.arg, NULL, 0);
 
           if (port <= 0 || port > 65535) {
             snprintf(config->error, sizeof(config->error),
@@ -232,7 +232,7 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
       case 'U':
         {
           /* Set the TCP port number. */
-          long port = strtol(state.optarg, NULL, 0);
+          long port = strtol(state.arg, NULL, 0);
 
           if (port <= 0 || port > 65535) {
             snprintf(config->error, sizeof(config->error),
@@ -247,17 +247,17 @@ static ares_bool_t read_cmdline(int argc, const char * const *argv,
 
       case ':':
         snprintf(config->error, sizeof(config->error),
-                 "%c requires an argument", state.optopt);
+                 "%c requires an argument", state.opt);
         return ARES_FALSE;
 
       default:
         snprintf(config->error, sizeof(config->error),
-                 "unrecognized option: %c", state.optopt);
+                 "unrecognized option: %c", state.opt);
         return ARES_FALSE;
     }
   }
 
-  config->args_processed = state.optind;
+  config->args_processed = state.ind;
   if (config->args_processed >= argc) {
     snprintf(config->error, sizeof(config->error), "missing query name");
     return ARES_FALSE;

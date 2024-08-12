@@ -34,10 +34,10 @@
 
 
 typedef struct {
-  const char         *optarg; /* argument associated with option */
-  int                 optind; /* index into parent argv vector */
-  int                 opterr; /* if error message should be printed */
-  int                 optopt; /* character checked for validity */
+  const char         *arg; /* argument associated with option */
+  int                 ind; /* index into parent argv vector */
+  int                 err; /* if error message should be printed */
+  int                 opt; /* character checked for validity */
   const char         *place;
   int                 argc;
   const char * const *argv;
