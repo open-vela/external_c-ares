@@ -89,6 +89,11 @@ W32_FUNC const char *_w32_GetHostsFile(void);
 #  define PATH_RESOLV_CONF "/system/settings/network/resolv.conf"
 #  define PATH_HOSTS       "/system/settings/network/hosts"
 
+#elif defined(CONFIG_NETDB_RESOLVCONF)
+
+#  define PATH_RESOLV_CONF CONFIG_NETDB_RESOLVCONF_PATH
+#  define PATH_HOSTS       CONFIG_NETDB_HOSTCONF_PATH
+
 #else
 
 #  define PATH_RESOLV_CONF "/etc/resolv.conf"
