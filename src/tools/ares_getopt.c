@@ -53,11 +53,11 @@ void ares_getopt_init(ares_getopt_state_t *state, int nargc,
                       const char * const *nargv)
 {
   memset(state, 0, sizeof(*state));
-  state->opterr = 1;
-  state->optind = 1;
-  state->place  = EMSG;
-  state->argc   = nargc;
-  state->argv   = nargv;
+  state->err   = 1;
+  state->ind   = 1;
+  state->place = EMSG;
+  state->argc  = nargc;
+  state->argv  = nargv;
 }
 
 /*
@@ -70,10 +70,10 @@ int ares_getopt(ares_getopt_state_t *state, const char *ostr)
 
   /* update scanning pointer */
   if (!*state->place) {
-    if (state->optind >= state->argc) {
+    if (state->ind >= state->argc) {
       return -1;
     }
-    state->place = state->argv[state->optind];
+    state->place = state->argv[state->ind];
     if (*(state->place) != '-') {
       return -1;
     }
@@ -81,58 +81,58 @@ int ares_getopt(ares_getopt_state_t *state, const char *ostr)
 
     /* found "--" */
     if (*(state->place) == '-') {
-      state->optind++;
+      state->ind++;
       return -1;
     }
 
     /* Found just - */
     if (!*(state->place)) {
-      state->optopt = 0;
+      state->opt = 0;
       return BADCH;
     }
   }
 
   /* option letter okay? */
-  state->optopt = *(state->place);
+  state->opt = *(state->place);
   state->place++;
-  oli = strchr(ostr, state->optopt);
+  oli = strchr(ostr, state->opt);
 
   if (oli == NULL) {
     if (!(*state->place)) {
-      ++state->optind;
+      ++state->ind;
     }
-    if (state->opterr) {
+    if (state->err) {
       (void)fprintf(stderr, "%s: illegal option -- %c\n", __FILE__,
-                    state->optopt);
+                    state->opt);
     }
     return BADCH;
   }
 
   /* don't need argument */
   if (*++oli != ':') {
-    state->optarg = NULL;
+    state->arg = NULL;
     if (!*state->place) {
-      ++state->optind;
+      ++state->ind;
     }
   } else {
     /* need an argument */
     if (*state->place) {                         /* no white space */
-      state->optarg = state->place;
-    } else if (state->argc <= ++state->optind) { /* no arg */
+      state->arg = state->place;
+    } else if (state->argc <= ++state->ind) { /* no arg */
       state->place = EMSG;
       if (*ostr == ':') {
         return BADARG;
       }
-      if (state->opterr) {
+      if (state->err) {
         (void)fprintf(stderr, "%s: option requires an argument -- %c\n",
-                      __FILE__, state->optopt);
+                      __FILE__, state->opt);
       }
       return BADARG;
     } else { /* white space */
-      state->optarg = state->argv[state->optind];
+      state->arg = state->argv[state->ind];
     }
     state->place = EMSG;
-    ++state->optind;
+    ++state->ind;
   }
-  return state->optopt; /* dump back option letter */
+  return state->opt; /* dump back option letter */
 }
