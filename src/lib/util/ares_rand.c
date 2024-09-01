@@ -56,8 +56,8 @@ static unsigned int ares_u32_from_ptr(void *addr)
 {
   /* LCOV_EXCL_START: FallbackCode */
   if (ares__is_64bit()) {
-    return (unsigned int)((((ares_uint64_t)addr >> 32) & 0xFFFFFFFF) |
-                          ((ares_uint64_t)addr & 0xFFFFFFFF));
+    return (unsigned int)((((ares_uint64_t)(uintptr_t)addr >> 32) & 0xFFFFFFFF) |
+                          ((ares_uint64_t)(uintptr_t)addr & 0xFFFFFFFF));
   }
   return (unsigned int)((size_t)addr & 0xFFFFFFFF);
   /* LCOV_EXCL_STOP */
