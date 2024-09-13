@@ -40,8 +40,16 @@
 #  include <netinet/in.h>
 #endif
 
-#define DEFAULT_TIMEOUT 2000 /* milliseconds */
-#define DEFAULT_TRIES   3
+#ifndef DEFAULT_TIMEOUT
+#  define DEFAULT_TIMEOUT    2000  /* milliseconds */
+#endif
+#ifndef DEFAULT_MAXTIMEOUT
+#  define DEFAULT_MAXTIMEOUT 30000 /* milliseconds */
+#endif
+#ifndef DEFAULT_TRIES
+#  define DEFAULT_TRIES      3
+#endif
+
 #ifndef INADDR_NONE
 #  define INADDR_NONE 0xffffffff
 #endif
