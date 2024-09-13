@@ -352,9 +352,11 @@ static int find_src_addr(ares_channel_t *channel, const struct sockaddr *addr,
     case AF_INET:
       len = sizeof(struct sockaddr_in);
       break;
+#ifdef HAVE_AF_INET6
     case AF_INET6:
       len = sizeof(struct sockaddr_in6);
       break;
+#endif
     default:
       /* No known usable source address for non-INET families. */
       return 0;
