@@ -193,7 +193,7 @@
 #if !defined(HAVE_AF_INET6)
 #  if defined(HAVE_PF_INET6)
 #    define AF_INET6 PF_INET6
-#  else
+#  elif defined(AF_MAX)
 #    define AF_INET6 AF_MAX + 1
 #  endif
 #endif
