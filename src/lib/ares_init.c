@@ -146,6 +146,10 @@ static ares_status_t init_by_defaults(ares_channel_t *channel)
     channel->tries = DEFAULT_TRIES;
   }
 
+  if (channel->maxtimeout == 0) {
+    channel->maxtimeout = DEFAULT_MAXTIMEOUT;
+  }
+
   if (ares__slist_len(channel->servers) == 0) {
     /* Add a default local named server to the channel unless configured not
      * to (in which case return an error).
