@@ -620,6 +620,7 @@ static ares_status_t parse_resolvconf_line(ares_sysconfig_t *sysconfig,
   return status;
 }
 
+#ifndef __NuttX__
 /* This function will only return ARES_SUCCESS or ARES_ENOMEM.  Any other
  * conditions are ignored.  Users may mess up config files, but we want to
  * process anything we can. */
@@ -713,6 +714,7 @@ done:
   }
   return status;
 }
+#endif
 
 typedef ares_status_t (*line_callback_t)(ares_sysconfig_t *sysconfig,
                                          ares__buf_t      *line);
@@ -781,6 +783,7 @@ ares_status_t ares__init_sysconfig_files(const ares_channel_t *channel,
     goto done;
   }
 
+#ifndef __NuttX__
   /* Nsswitch.conf */
   status =
     process_config_lines("/etc/nsswitch.conf", sysconfig, parse_nsswitch_line);
@@ -800,6 +803,7 @@ ares_status_t ares__init_sysconfig_files(const ares_channel_t *channel,
   if (status != ARES_SUCCESS && status != ARES_ENOTFOUND) {
     goto done;
   }
+#endif
 
   status = ARES_SUCCESS;
 
