@@ -424,7 +424,7 @@ static void read_udp_packets_fd(ares_channel_t *channel, ares_conn_t *conn,
                                 const ares_timeval_t *now)
 {
   ares_ssize_t  read_len;
-  unsigned char buf[MAXENDSSZ + 1];
+  unsigned char *buf;
 
 #ifdef HAVE_RECVFROM
   ares_socklen_t fromlen;
@@ -438,6 +438,11 @@ static void read_udp_packets_fd(ares_channel_t *channel, ares_conn_t *conn,
   memset(&from, 0, sizeof(from));
 #endif
 
+  buf = malloc(MAXENDSSZ + 1);
+  if (buf == NULL) {
+    return;
+  }
+
   /* To reduce event loop overhead, read and process as many
    * packets as we can. */
   do {
@@ -450,7 +455,7 @@ static void read_udp_packets_fd(ares_channel_t *channel, ares_conn_t *conn,
         fromlen = sizeof(from.sa6);
       }
       read_len = ares__socket_recvfrom(channel, conn->fd, (void *)buf,
-                                       sizeof(buf), 0, &from.sa, &fromlen);
+                                       MAXENDSSZ + 1, 0, &from.sa, &fromlen);
     }
 
     if (read_len == 0) {
@@ -459,12 +464,11 @@ static void read_udp_packets_fd(ares_channel_t *channel, ares_conn_t *conn,
        * tcp */
       continue;
     } else if (read_len < 0) {
-      if (ares__socket_try_again(SOCKERRNO)) {
-        break;
+      if (!ares__socket_try_again(SOCKERRNO)) {
+        handle_conn_error(conn, ARES_TRUE, ARES_ECONNREFUSED);
       }
 
-      handle_conn_error(conn, ARES_TRUE, ARES_ECONNREFUSED);
-      return;
+      break;
 #ifdef HAVE_RECVFROM
     } else if (!same_address(&from.sa, &conn->server->addr)) {
       /* The address the response comes from does not match the address we
@@ -480,6 +484,8 @@ static void read_udp_packets_fd(ares_channel_t *channel, ares_conn_t *conn,
     /* Try to read again only if *we* set up the socket, otherwise it may be
      * a blocking socket and would cause recvfrom to hang. */
   } while (read_len >= 0 && channel->sock_funcs == NULL);
+
+  free(buf);
 }
 
 static void read_packets(ares_channel_t *channel, fd_set *read_fds,
