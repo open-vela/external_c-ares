@@ -456,10 +456,11 @@ static const unsigned char *ares__buf_fetch(const ares__buf_t *buf, size_t *len)
     return NULL;
   }
 
-  *len = buf->data_len - buf->offset;
-  if (*len == 0) {
+  if (buf->offset >= buf->data_len) {
     return NULL;
   }
+
+  *len = buf->data_len - buf->offset;
 
   return buf->data + buf->offset;
 }
